@@ -24,11 +24,14 @@ export class GameMode {
         this.configure();
         ListenToGameEvent("game_rules_state_change", () => this.OnStateChange(), undefined);
         ListenToGameEvent("npc_spawned", event => this.OnNpcSpawned(event), undefined);
+        CustomGameEventManager.RegisterListener("testEvent", (userId, event) => {
+            this.OnCustomListener(userId, event);
+        });
     }
 
     private configure(): void {
-        GameRules.SetCustomGameTeamMaxPlayers(DOTATeam_t.DOTA_TEAM_GOODGUYS, 3);
-        GameRules.SetCustomGameTeamMaxPlayers(DOTATeam_t.DOTA_TEAM_BADGUYS, 3);
+        GameRules.SetCustomGameTeamMaxPlayers(DotaTeam.GOODGUYS, 3);
+        GameRules.SetCustomGameTeamMaxPlayers(DotaTeam.BADGUYS, 3);
 
         GameRules.SetShowcaseTime(0);
         GameRules.SetHeroSelectionTime(heroSelectionTime);
@@ -38,14 +41,14 @@ export class GameMode {
         const state = GameRules.State_Get();
 
         // Add 4 bots to lobby in tools
-        if (IsInToolsMode() && state == DOTA_GameState.DOTA_GAMERULES_STATE_CUSTOM_GAME_SETUP) {
+        if (IsInToolsMode() && state == GameState.CUSTOM_GAME_SETUP) {
             for (let i = 0; i < 4; i++) {
                 Tutorial.AddBot("npc_dota_hero_lina", "", "", false);
             }
         }
 
         // Start game once pregame hits
-        if (state == DOTA_GameState.DOTA_GAMERULES_STATE_PRE_GAME) {
+        if (state == GameState.PRE_GAME) {
             Timers.CreateTimer(0.2, () => this.StartGame());
         }
     }
@@ -76,5 +79,12 @@ export class GameMode {
                 unit.AddAbility("meepo_earthbind_ts_example");
             }
         }
+    }
+
+    private OnCustomListener(
+        userId: EntityIndex,
+        event: NetworkedData<CCustomGameEventManager.InferEventType<string, object> & { PlayerID: PlayerID }>,
+    ) {
+        print("Received!");
     }
 }
