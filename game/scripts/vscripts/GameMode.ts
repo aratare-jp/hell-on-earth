@@ -1,5 +1,6 @@
 import { reloadable } from "./lib/tstl-utils";
 import "./modifiers/modifier_panic";
+import "./WASDController";
 
 const heroSelectionTime = 10;
 
@@ -24,9 +25,7 @@ export class GameMode {
         this.configure();
         ListenToGameEvent("game_rules_state_change", () => this.OnStateChange(), undefined);
         ListenToGameEvent("npc_spawned", event => this.OnNpcSpawned(event), undefined);
-        CustomGameEventManager.RegisterListener("testEvent", (userId, event) => {
-            this.OnCustomListener(userId, event);
-        });
+        setupWASD();
     }
 
     private configure(): void {
@@ -79,12 +78,5 @@ export class GameMode {
                 unit.AddAbility("meepo_earthbind_ts_example");
             }
         }
-    }
-
-    private OnCustomListener(
-        userId: EntityIndex,
-        event: NetworkedData<CCustomGameEventManager.InferEventType<string, object> & { PlayerID: PlayerID }>,
-    ) {
-        print("Received!");
     }
 }

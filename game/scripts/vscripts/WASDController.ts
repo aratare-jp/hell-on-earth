@@ -21,20 +21,20 @@ const Direction = {
     }
 }
 
-GameEvents.Subscribe("dota_player_spawned", (event) => {
-    setupWASD();
-});
-
 function setupWASD() {
     let dirs: Array<"UP" | "LEFT" | "DOWN" | "RIGHT"> = ["UP", "LEFT", "DOWN", "RIGHT"];
     for (let dir of dirs) {
-        Game.CreateCustomKeyBind(Direction[dir].key, Direction[dir].event);
-        Game.AddCommand(Direction[dir].event, function () {
-            $.Msg(Direction[dir].message.message);
-            GameEvents.SendCustomGameEventToServer<{ message: string }>(
-                Direction[dir].event,
-                Direction[dir].message
-            );
-        }, "", 0);
+        CustomGameEventManager.RegisterListener(Direction[dir].event, (userId, event) => {
+            OnCustomListener(userId, event);
+        });
     }
+}
+
+function OnCustomListener(
+    userId: EntityIndex,
+    event: NetworkedData<CCustomGameEventManager.InferEventType<string, object> & { PlayerID: PlayerID }>,
+) {
+    let player = Entities.GetLocalPlayer();
+    
+    print(event);
 }
