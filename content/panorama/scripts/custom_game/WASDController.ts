@@ -21,7 +21,7 @@ const Direction = {
     }
 }
 
-GameEvents.Subscribe("dota_player_spawned", (event) => {
+GameEvents.Subscribe("dota_on_hero_finish_spawn", (event) => {
     setupWASD();
 });
 
