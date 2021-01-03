@@ -1,6 +1,6 @@
 import { CameraController } from "./CameraController";
 import { reloadable } from "./lib/tstl-utils";
-import "./modifiers/modifier_panic";
+import "./modifiers/WasdModifier";
 import { WASDController } from "./WASDController";
 
 declare global {
@@ -99,7 +99,12 @@ export class GameMode {
     }
 
     private OnPlayerSpawned(event: GameEventProvidedProperties & DotaOnHeroFinishSpawnEvent) {
+        // Configure the controllers here so player and hero are available at script called.
         this.configureControllers();
+
+        let player = Entities.GetLocalPlayer();
+        let hero = player.GetAssignedHero();
+        hero.AddNewModifier(hero, undefined, "wasdModifier", {});
     }
 
     

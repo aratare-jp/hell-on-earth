@@ -1,0 +1,40 @@
+"AddonInfo"
+{
+  "TeamCount" "4"
+  "maps"      "smash"
+  "IsPlayable"  "1"
+  "smash"
+  {
+    "MaxPlayers"                    "4"
+  }
+  
+  "Default_Keys"
+  {
+    "01"
+    {
+      "Key"       "W"
+      "Command"   "+MMoveUp"
+      "Name"      "Move Up"
+    }
+    "02"
+    {
+      "Key"       "A"
+      "Command"   "+MMoveLeft"
+      "Name"      "Move Left"
+    }
+    "03"
+    {
+      "Key"       "S"
+      "Command"   "+MMoveDown"
+      "Name"      "Move Down"
+    }
+    "04"
+    {
+      "Key"       "D"
+      "Command"   "+MMoveRight"
+      "Name"      "Move Right"
+    }
+   
+  }
+}
+    

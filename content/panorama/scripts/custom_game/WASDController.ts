@@ -1,38 +1,50 @@
 const Direction = {
     UP: {
         key: 'w',
-        event: 'moveUp',
-        message: {message: 'Moving Up!'}
+        event: 'MMoveUp',
+        message: { message: 'Moving Up!' }
     },
     LEFT: {
         key: 'a',
-        event: 'moveLeft',
-        message: {message: 'Moving Left!'}
+        event: 'MMoveLeft',
+        message: { message: 'Moving Left!' }
     },
     DOWN: {
         key: 's',
-        event: 'moveDown',
-        message: {message: 'Moving Down!'}
+        event: 'MMoveDown',
+        message: { message: 'Moving Down!' }
     },
     RIGHT: {
         key: 'd',
-        event: 'moveRight',
-        message: {message: 'Moving Right!'}
+        event: 'MMoveRight',
+        message: { message: 'Moving Right!' }
     }
 }
 
+// TODO: Move this to another file so no reload.
 GameEvents.Subscribe("dota_on_hero_finish_spawn", (event) => {
     setupWASD();
 });
 
 function setupWASD() {
+    $.Msg("Setting up WASD");
+
     let dirs: Array<"UP" | "LEFT" | "DOWN" | "RIGHT"> = ["UP", "LEFT", "DOWN", "RIGHT"];
     for (let dir of dirs) {
-        Game.CreateCustomKeyBind(Direction[dir].key, Direction[dir].event);
-        Game.AddCommand(Direction[dir].event, function () {
-            $.Msg(Direction[dir].message.message);
+        // Bind key down
+        Game.AddCommand("+" + Direction[dir].event, function () {
+            $.Msg("Key down: " + dir);
             GameEvents.SendCustomGameEventToServer<{ message: string }>(
-                Direction[dir].event,
+                "+" + Direction[dir].event,
+                Direction[dir].message
+            );
+        }, "", 0);
+
+        // Bind key up
+        Game.AddCommand("-" + Direction[dir].event, function () {
+            $.Msg("Key up: " + dir);
+            GameEvents.SendCustomGameEventToServer<{ message: string }>(
+                "-" + Direction[dir].event,
                 Direction[dir].message
             );
         }, "", 0);
