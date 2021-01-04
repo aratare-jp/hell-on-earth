@@ -1,7 +1,8 @@
 import { CameraController } from "./CameraController";
 import { reloadable } from "./lib/tstl-utils";
-import "./modifiers/WasdModifier";
 import { WASDController } from "./WASDController";
+import "./modifiers/WasdModifier";
+import "./modifiers/RotateModifier";
 
 declare global {
     interface CDOTAGamerules {
@@ -71,6 +72,7 @@ export class GameMode {
         print("Script reloaded!");
 
         this.configureControllers();
+        this.addModifers();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -102,9 +104,7 @@ export class GameMode {
         // Configure the controllers here so player and hero are available at script called.
         this.configureControllers();
 
-        let player = Entities.GetLocalPlayer();
-        let hero = player.GetAssignedHero();
-        hero.AddNewModifier(hero, undefined, "wasdModifier", {});
+        this.addModifers();
     }
 
     
@@ -130,5 +130,21 @@ export class GameMode {
         print("Configuring controllers");
         this.wasdController.setupWASD();
         this.cameraController.setupCamera();
+    }
+
+    private addModifers() {
+        print("Adding modifiers");
+        let player = Entities.GetLocalPlayer();
+        let hero = player.GetAssignedHero();
+        hero.AddNewModifier(hero, undefined, "wasdModifier", {});
+        hero.AddNewModifier(hero, undefined, "rotateModifier", {});
+    }
+
+    private removeModifiers() {
+        print("Removing modifiers");
+        let player = Entities.GetLocalPlayer();
+        let hero = player.GetAssignedHero();
+        hero.RemoveModifierByName("wasdModifier");
+        hero.RemoveModifierByName("rotateModifier");
     }
 }

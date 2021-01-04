@@ -1,5 +1,5 @@
 import { BaseModifier, registerModifier } from "../lib/dota_ts_adapter";
-import { Direction } from "../WASDController";
+import { Direction, Dirs } from "../WASDController";
 
 @registerModifier("wasdModifier")
 export class WasdModifier extends BaseModifier {
@@ -15,9 +15,12 @@ export class WasdModifier extends BaseModifier {
         UP_RIGHT: false,
     }
 
+    // TODO: Move this into each hero.
+    private movementSpeed = 400;
+
     OnCreated() {
         if (IsServer()) {
-            this.StartIntervalThink(0.1);
+            this.StartIntervalThink(FrameTime());
         }
     }
 
@@ -27,6 +30,10 @@ export class WasdModifier extends BaseModifier {
 
     OnIntervalThink() {
         let hero = this.GetParent() as CDOTA_BaseNPC_Hero;
+        if (!hero) {
+            return;
+        }
+
         let cord = hero.GetAbsOrigin();
 
         let vec: Vector;
@@ -50,7 +57,10 @@ export class WasdModifier extends BaseModifier {
             return;
         }
 
-        let newCord = cord + (vec * 850 * FrameTime()) as Vector;
-        hero.SetOrigin(GetGroundPosition(newCord, hero));
+        let newCord = (cord + vec * this.movementSpeed * FrameTime()) as Vector;
+        hero.SetAbsOrigin(GetGroundPosition(newCord, hero));
+        if (!IsUnitInValidPosition(hero)) {
+            hero.SetAbsOrigin(GetGroundPosition(cord, hero));
+        }
     }
 }

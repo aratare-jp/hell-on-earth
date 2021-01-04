@@ -51,7 +51,7 @@ export const Direction = {
     }
 }
 
-type Dirs = "UP" | "LEFT" | "DOWN" | "RIGHT"
+export type Dirs = "UP" | "LEFT" | "DOWN" | "RIGHT"
     | "UP_LEFT" | "DOWN_LEFT" | "DOWN_RIGHT" | "UP_RIGHT";
 
 export class WASDController {
@@ -60,10 +60,6 @@ export class WASDController {
 
     public setupWASD() {
         print("Configuring WASDController");
-
-        // De-listen all events before readding them.
-        this.listeners.forEach((lis) => CustomGameEventManager.UnregisterListener(lis));
-        this.listeners = [];
 
         // Loop to setup WASD without having to declare each separately.
         let dirs: Array<Dirs> = ["UP", "LEFT", "DOWN", "RIGHT"];
@@ -87,6 +83,15 @@ export class WASDController {
                 }
             ));
         }
+    }
+
+    public reload() {
+        print("Reloading WASDController");
+        // De-listen all events before readding them.
+        this.listeners.forEach((lis) => CustomGameEventManager.UnregisterListener(lis));
+        this.listeners = [];
+
+        this.setupWASD();
     }
 
     private OnKeyDown(userId: EntityIndex, dir: Dirs) {
