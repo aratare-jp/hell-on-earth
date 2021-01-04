@@ -24,6 +24,7 @@ const Direction = {
 // TODO: Move this to another file so no reload.
 GameEvents.Subscribe("dota_on_hero_finish_spawn", (event) => {
     setupWASD();
+    setupMouse();
 });
 
 function setupWASD() {
@@ -49,4 +50,42 @@ function setupWASD() {
             );
         }, "", 0);
     }
+}
+
+function setupMouse() {
+    $.Msg("Setting up mouse");
+
+    // Send mouse position all the time.
+    GameEvents.Subscribe("mousePositionReq", (_) => {
+        let cursor = GameUI.GetCursorPosition();
+
+        GameEvents.SendCustomGameEventToServer<{ x: number, y: number }>(
+            "mousePositionRes",
+            { x: cursor[0], y: cursor[1] }
+        );
+    });
+
+    GameUI.SetMouseCallback(((mouseEvent, value) => {
+        if (mouseEvent === "pressed") {
+            if (value === 0) {
+                $.Msg("Left mouse down");
+                GameEvents.SendCustomGameEventToServer<{ message: string }>(
+                    "leftMouseDown",
+                    { message: "stub" }
+                )
+                return true;
+            }
+        } else if (mouseEvent === "released") {
+            if (value === 0) {
+                $.Msg("Left mouse up");
+                GameEvents.SendCustomGameEventToServer<{ message: string }>(
+                    "leftMouseUp",
+                    { message: "stub" }
+                )
+                return true;
+            }
+        }
+
+        return false;
+    }));
 }

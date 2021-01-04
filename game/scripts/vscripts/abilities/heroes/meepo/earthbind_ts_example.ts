@@ -15,7 +15,7 @@ export class meepo_earthbind_ts_example extends BaseAbility {
 
         return cooldown;
     }
-
+ 
     OnAbilityPhaseStart() {
         if (IsServer()) {
             this.GetCaster().EmitSound("Hero_Meepo.Earthbind.Cast");

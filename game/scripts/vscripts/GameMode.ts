@@ -1,8 +1,10 @@
-import { CameraController } from "./CameraController";
 import { reloadable } from "./lib/tstl-utils";
-import { WASDController } from "./WASDController";
 import "./modifiers/WasdModifier";
 import "./modifiers/RotateModifier";
+import "./modifiers/ShootModifier";
+import { WASDController } from "./controllers/WASDController";
+import { CameraController } from "./controllers/CameraController";
+import { ShootController } from "./controllers/ShootController";
 
 declare global {
     interface CDOTAGamerules {
@@ -20,6 +22,7 @@ export class GameMode {
 
     public static Precache(this: void, context: CScriptPrecacheContext) {
         PrecacheResource("particle", "particles/units/heroes/hero_meepo/meepo_earthbind_projectile_fx.vpcf", context);
+        PrecacheResource("particle", "particles/units/heroes/hero_skywrath_mage/skywrath_mage_arcane_bolt.vpcf", context);
         PrecacheResource("soundfile", "soundevents/game_sounds_heroes/game_sounds_meepo.vsndevts", context);
     }
 
@@ -36,6 +39,7 @@ export class GameMode {
 
     private readonly wasdController: WASDController;
     private readonly cameraController: CameraController;
+    private readonly shootController: ShootController;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -55,6 +59,7 @@ export class GameMode {
     constructor() {
         this.wasdController = new WASDController();
         this.cameraController = new CameraController();
+        this.shootController = new ShootController();
 
         this.configure();
     }
@@ -72,7 +77,12 @@ export class GameMode {
         print("Script reloaded!");
 
         this.configureControllers();
+
+        this.removeModifiers();
         this.addModifers();
+
+        this.removeAbilities();
+        this.addAbilities();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,9 +104,8 @@ export class GameMode {
 
     private OnNpcSpawned(event: NpcSpawnedEvent) {
         // After a hero unit spawns, apply modifier_panic for 8 seconds
-        const unit = EntIndexToHScript(event.entindex) as CDOTA_BaseNPC; // Cast to npc since this is the 'npc_spawned' event
+        const unit = EntIndexToHScript(event.entindex) as CDOTA_BaseNPC;
         if (unit.IsRealHero()) {
-            // this.configureControllers();
         }
     }
 
@@ -105,9 +114,9 @@ export class GameMode {
         this.configureControllers();
 
         this.addModifers();
+        this.addAbilities();
     }
 
-    
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
     // PRIVATE METHODS
@@ -130,6 +139,7 @@ export class GameMode {
         print("Configuring controllers");
         this.wasdController.setupWASD();
         this.cameraController.setupCamera();
+        this.shootController.setupShoot();
     }
 
     private addModifers() {
@@ -138,6 +148,7 @@ export class GameMode {
         let hero = player.GetAssignedHero();
         hero.AddNewModifier(hero, undefined, "wasdModifier", {});
         hero.AddNewModifier(hero, undefined, "rotateModifier", {});
+        hero.AddNewModifier(hero, undefined, "shootModifier", {});
     }
 
     private removeModifiers() {
@@ -146,5 +157,22 @@ export class GameMode {
         let hero = player.GetAssignedHero();
         hero.RemoveModifierByName("wasdModifier");
         hero.RemoveModifierByName("rotateModifier");
+        hero.RemoveModifierByName("shootModifier");
+    }
+
+    private addAbilities() {
+        print("Adding abilities");
+        let player = Entities.GetLocalPlayer();
+        let hero = player.GetAssignedHero();
+        if (!hero.HasAbility("common_shoot")) {
+            hero.AddAbility("common_shoot");
+        }
+    }
+
+    private removeAbilities() {
+        print("Removing abilities");
+        let player = Entities.GetLocalPlayer();
+        let hero = player.GetAssignedHero();
+        hero.RemoveAbility("common_shoot");
     }
 }

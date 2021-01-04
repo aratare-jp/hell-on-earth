@@ -1,5 +1,5 @@
 import { BaseModifier, registerModifier } from "../lib/dota_ts_adapter";
-import { Direction, Dirs } from "../WASDController";
+import { Direction, Dirs } from "../controllers/WASDController";
 
 @registerModifier("wasdModifier")
 export class WasdModifier extends BaseModifier {

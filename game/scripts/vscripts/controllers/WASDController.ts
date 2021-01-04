@@ -1,4 +1,4 @@
-import {WasdModifier} from "./modifiers/WasdModifier";
+import { WasdModifier } from "../modifiers/WasdModifier";
 
 export const Direction = {
     UP: {
@@ -83,6 +83,11 @@ export class WASDController {
                 }
             ));
         }
+
+        CustomGameEventManager.RegisterListener<{ x: number, y: number }>(
+            "mouseEvent",
+            (userId, event) => { print("Mouse: " + event.x + " " + event.y) }
+        )
     }
 
     public reload() {
