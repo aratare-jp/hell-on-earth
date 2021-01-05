@@ -18,3 +18,7 @@ node_modules
 *.vsndevts_c
 *.vsnd_c
 panorama_debugger.cfg
+
+.idea
+node_modules
+.vscode
