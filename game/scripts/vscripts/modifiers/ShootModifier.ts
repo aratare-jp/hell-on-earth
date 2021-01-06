@@ -3,8 +3,8 @@ import {BaseModifier, registerModifier} from "../lib/dota_ts_adapter";
 @registerModifier("shootModifier")
 export class ShootModifier extends BaseModifier {
 	public isLeftMouseDown = false;
-	public shootInterval = 0.2;
-	private shootTimer = 0.5;
+	public shootInterval = 0.15;
+	private shootTimer = 0.15;
 
 	public OnCreated() {
 		if (IsServer()) {
@@ -19,14 +19,14 @@ export class ShootModifier extends BaseModifier {
 	}
 
 	public OnIntervalThink() {
+		this.shootTimer += FrameTime();
+
 		if (this.isLeftMouseDown) {
 			if (this.shootTimer >= this.shootInterval) {
 				let hero = this.GetParent() as CDOTA_BaseNPC_Hero;
 				let ability = hero.FindAbilityByName("common_shoot");
 				ability?.CastAbility();
 				this.shootTimer = 0;
-			} else {
-				this.shootTimer += FrameTime();
 			}
 		}
 	}

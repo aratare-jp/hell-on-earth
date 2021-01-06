@@ -1,5 +1,7 @@
 import {BaseModifier, registerModifier} from "../lib/dota_ts_adapter";
 import {Direction, Dirs} from "../controllers/WASDController";
+import {Logger} from "../lib/logger";
+import {CONFIG} from "../config";
 
 @registerModifier("wasdModifier")
 export class WasdModifier extends BaseModifier {
@@ -18,14 +20,27 @@ export class WasdModifier extends BaseModifier {
 	// TODO: Move this into each hero.
 	private movementSpeed = 400;
 
+	private LOGGER: Logger;
+
+	constructor() {
+		super();
+		this.LOGGER = new Logger("WasdModifier", CONFIG.LOG_LEVEL);
+	}
+
 	OnCreated() {
+		this.LOGGER.debug("On created");
+
 		if (IsServer()) {
 			this.StartIntervalThink(FrameTime());
 		}
 	}
 
 	OnDestroy() {
-		this.StartIntervalThink(-1);
+		this.LOGGER.debug("On destroy");
+
+		if (IsServer()) {
+			this.StartIntervalThink(-1);
+		}
 	}
 
 	OnIntervalThink() {
