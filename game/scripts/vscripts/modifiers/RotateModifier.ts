@@ -18,7 +18,7 @@ export class RotateModifier extends BaseModifier {
 
 		if (IsServer()) {
 			this.LOGGER.trace("Registering Mouse Position Listener")
-			this.mousePositionResListenerID = CustomGameEventManager.RegisterListener<{ x: number, y: number }>(
+			this.mousePositionResListenerID = CustomGameEventManager.RegisterListener<{ x: number, y: number, z: number }>(
 				"mousePositionRes",
 				(userId, event) => this.OnMouseMoved(userId, event)
 			)
@@ -49,10 +49,9 @@ export class RotateModifier extends BaseModifier {
 		);
 	}
 
-	private OnMouseMoved(userId: EntityIndex, event: { x: number, y: number, PlayerID: PlayerID }) {
+	private OnMouseMoved(userId: EntityIndex, event: { x: number, y: number, z: number, PlayerID: PlayerID }) {
 		let hero = this.GetParent() as CDOTA_BaseNPC_Hero;
-		let centralisedCursor = centraliseFromScreenPosition(event.x, event.y);
-		let normalisedCursor = Vector(centralisedCursor.x, centralisedCursor.y, 0).Normalized();
-		hero.SetForwardVector(normalisedCursor);
+		let worldCursor = (Vector(event.x, event.y, event.z) - hero.GetAbsOrigin() as Vector).Normalized();
+		hero.SetForwardVector(Vector(worldCursor.x, worldCursor.y, 0));
 	}
 }
